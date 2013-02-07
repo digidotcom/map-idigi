@@ -1,0 +1,135 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+import sys
+import subprocess
+import os
+import zipfile
+
+
+def check_output(*popenargs, **kwargs):
+    r"""Run command with arguments and return its output as a byte string.
+
+    Backported from Python 2.7 as it's implemented as pure python on stdlib.
+
+    >>> check_output(['/usr/bin/python', '--version'])
+    Python 2.6.2
+
+    https://gist.github.com/1027906
+    """
+    process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+    output, unused_err = process.communicate()
+    retcode = process.poll()
+    if retcode:
+        cmd = kwargs.get("args")
+        if cmd is None:
+            cmd = popenargs[0]
+        error = subprocess.CalledProcessError(retcode, cmd)
+        error.output = output
+        raise error
+    return output
+
+
+def pep_8(files):
+    for file in files:
+        if file.endswith('.py') or file.startswith('hooks/'):
+            try:
+                # print('running pep8 on ', file)
+                check_output('pep8 {0}'.format(file), shell=True)
+            except subprocess.CalledProcessError:
+                print('pep8 failed on {0}'.format(file))
+                raise
+
+
+def jsbeautifier_check(files):
+    for file in files:
+        if file.endswith('.js'):
+            with open(file, 'r') as f:
+                contents = f.read().strip()
+                if contents != check_output(['expand', file]).strip():
+                    print('please remove your tabs from {0}'.format(file))
+                    raise ValueError('js-tab check failed')
+
+
+def zip_files():
+    target_dir = './'
+    zip = zipfile.ZipFile('./static/source.zip', 'w', zipfile.ZIP_DEFLATED)
+
+    for base, dirs, files in os.walk(target_dir):
+
+        for d in ['iDigiMA_scripts', 'hooks',  '.git']:
+            if d in dirs:
+                dirs.remove(d)
+
+        for f in ['.gitignore', 'source.zip']:
+            if f in files:
+                files.remove(f)
+
+        for ext in ['.pyc']:
+            for f in files:
+                if f.endswith(ext):
+                    files.remove(f)
+
+        for file in files:
+            name = os.path.join(base, file)
+            zip.write(name)
+
+
+class git_stash(object):
+    def __init__(self):
+        pass
+
+    def __enter__(self):
+        print('running git stash')
+        process = subprocess.Popen('git stash --keep-index',
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   shell=True)
+        output, err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            error = subprocess.CalledProcessError(retcode, cmd)
+            error.output = output
+            raise error
+        # print(repr((output, err)))
+        if output.startswith('No local changes to save'):
+            self.stashed = False
+            print('git had nothing to stash')
+        else:
+            self.stashed = True
+
+    def __exit__(self, typ, value, traceback):
+        if self.stashed:
+            print('running git stash pop')
+            subprocess.check_call('git reset --hard -q', shell=True)
+            subprocess.check_call('git stash pop --index -q', shell=True)
+
+
+def changed_files():
+    output = check_output('git diff --cached --name-only --diff-filter=ACM',
+                          shell=True)
+    return output
+
+
+def main():
+    with git_stash():
+        print('getting changed files')
+        changed_list = changed_files().split()
+        try:
+            print('checking pep8')
+            pep_8(changed_list)
+            print('checking javascript')
+            jsbeautifier_check(changed_list)
+        except (subprocess.CalledProcessError, ValueError):
+            print('GIT COMMIT ABORTED')
+            return 1
+        # zip_files()
+        print('incrementing build')
+    print('Done with pre-commit')
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())

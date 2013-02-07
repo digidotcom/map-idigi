@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/org.css" />
+{% endblock %}
+
+{% block content %}
+		<h4>Organizations<a href="" class="plus showAddOrg">+</a></h4>
+        <div id="orgContainer">
+
+        </div>
+
+		<div class="editBox lightbox">
+			<div>
+				<h3>Edit Org</h3>
+				<form id="editForm">
+					<div>
+						<label>Org Name:</label>
+						<input id="editName" type="text" name="name"/>
+					</div>
+
+					<div>
+						<label>Address:</label>
+						<input id="editAddress" type="text" name="address"/>
+					</div>
+
+					<div>
+						<label>City:</label>
+                        <input id="editCity" type="text" name="city"/>
+					</div>
+
+					<div>
+						<label>Postal Code:</label>
+						<input id="editZip" type="text" name="zip"/>
+					</div>
+
+					<div>
+						<label>State:</label>
+						<input id="editState" type="text" name="state"/>
+					</div>
+
+					<div class="actions">
+						<input class="modifyOrg" type="button" value="Save"/>
+						<input class="cancel" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="addBox lightbox">
+			<div>
+				<h3>Add Org</h3>
+            <form id="orgForm">
+                    <div>
+						<label>Parent Org:</label>
+                        <select id="saveParentSelect" name="parent_id">
+                            <option>Loading...</option>
+                        </select>
+					</div>
+
+					<div>
+						<label>Org Name:</label>
+						<input id="saveName" type="text" name="name"/>
+					</div>
+
+					<div>
+						<label>Address:</label>
+						<input id="saveAddress" type="text" name="address"/>
+					</div>
+
+					<div>
+						<label>City:</label>
+                        <input id="saveCity" type="text" name="city"/>
+					</div>
+
+					<div>
+						<label>Postal Code:</label>
+						<input id="saveZip" type="text" name="zip"/>
+					</div>
+
+					<div>
+						<label>State:</label>
+						<input id="saveState" type="text" name="state"/>
+					</div>
+
+
+					<div class="actions">
+						<input class="saveOrg" type="button" value="Save"/>
+						<input class="cancel" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/org.js"></script>
+{% endblock %}
+

@@ -1,0 +1,82 @@
+a.plus {
+    padding: 4px 6px;
+    text-decoration: none;
+}
+
+.actions {
+    list-style: none;
+    float: right;
+}
+
+.actions li {
+    float: left;
+    margin-right: 1em;
+}
+
+.idnumber {
+    float: left;
+    left:10px;
+    width: 60px;
+}
+
+.name {
+    float: left;
+    width: 400px;
+}
+
+.box {
+    color: #383838;
+    border: 0px solid #b0b9bd;
+    overflow: hidden;
+}
+
+.box div {
+    font-size: .8em;
+}
+
+.box div ul {
+    margin-left: 4em;
+}
+
+#userContainer > div:nth-child(odd) {
+    background-color:#e0e0e0;
+}
+
+
+.description-text {
+    padding: 1em 2em 1em 1em;
+    color: #636363;
+}
+
+.collapse {
+    margin: 9px 0 4px 6px;
+    padding: 0 8px 4px 18px;
+    line-height: 10px;
+    color: black;
+    font-size: 14px;
+    display: block;
+    background: transparent url(/static/images/arrow-down.png) no-repeat top left;
+}
+
+.deactivated {
+    color: #884444;
+}
+
+.deactivated .collapse {
+    color: #884444;
+    text-decoration: line-through;
+}
+
+.userTab {
+    background-color: #b7162d;
+    padding: 4px 6px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    float: right;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}

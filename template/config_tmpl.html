@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/config.css" />
+{% endblock %}
+{% block content %}
+		<h2 class="h4">Asset Configuration</h2>
+	<div id="configContainer">
+        <form id='configForm'>
+            {% for feature in pageData %}
+            <div class="feature">
+                <h3>{{ feature.name }}</h3>
+                    {% spaceless %}
+
+                {% for attribute in feature.attrs %}
+                    <div class="attribute">
+                        <label class="configHeader">{{ attribute.attrName }} </label>
+                        {% if attribute.attrType == "boolean" %}
+                        <input type="checkbox"
+                               {% if attribute.attrValue == "1" %}
+                               checked
+                               {% endif %}
+                        {% else %}
+
+                            {% if attribute.attrType == "String" %}
+                            <input type="text"
+                            {% endif %}
+
+                            {% if attribute.attrType == "int" %}
+                            <input type="text"
+                            {% endif %}
+
+                            {% if attribute.attrType == "Time" %}
+                            <input type="text"
+                            {% endif %}
+
+                            {% if attribute.attrType == "Time in sec" or attribute.attrType == "Time in seconds" or attribute.attrType == "Time in secs"%}
+                            <input type="text"
+                            {% endif %}
+
+                            {% if attribute.attrType == "Time in Minutes" %}
+                            <input type="text"
+                            {% endif %}
+                            {% if attribute.attrValue == None %}
+                            value=""
+                            {% else %}
+                            value="{{attribute.attrValue}}"
+                            {% endif %}
+                            foo="{{attribute.attrType}}"
+
+                        {% endif %}
+                               name="{{feature.id}}_{{attribute.attrId}}" />
+                        {% if attribute.attrType == "int" %}<span>integer</span>{% endif %}
+                        {% if attribute.attrType == "Time" %}<span>time</span>{% endif %}
+                        {% if attribute.attrType == "Time in sec" %}<span>sec</span>{% endif %}
+                        {% if attribute.attrType == "Time in seconds" %}<span>sec</span>{% endif %}
+                        {% if attribute.attrType == "Time in Minutes" %}<span>min</span>{% endif %}
+                    </div><br />
+                {% endfor %}
+                    {% endspaceless %}
+                </div>
+            {% endfor %}
+	            <span class="actions">
+					<input class="saveConfig" type="button" value="Save"/>
+					<input class="cancelConfig" type="button" value="Exit"/>
+				</span>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+   <script src="/static/config.js"></script>
+{% endblock %}

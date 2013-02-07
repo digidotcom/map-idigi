@@ -1,0 +1,134 @@
+{% extends "core.html" %}
+
+
+{% block navigation %}
+			<ul>
+				<li><a class="homeTab" href="/">Home</a></li>
+				<li><a class="geofenceTab" href="/geofence/">Geofences</a></li>
+				<li><a class="assetTab" href="/asset/">Assets</a></li>
+				<li><a class="userTab" href="/user/">Users</a></li>
+				<li><a class="deviceTab" href="/device/">Devices</a></li>
+				<li><a class="orgTab" href="/org/">Organizations</a></li>
+			</ul>
+{% endblock %}
+
+{% block account %}
+		<div id="account">
+			<ul>
+				<li><strong>{{ username }}</strong></li>
+				<li id="settingsTrigger">
+					<a href="#">settings</a>
+					<ul id="settings">
+						<li><a class="showResetPassword" href="">reset password</a></li>
+						<li class="grey"><a class="showPassword" href="">change password</a></li>
+						<li><a href="" class="showQuestions">security questions</a></li>
+					</ul>
+				</li>
+				<li><a href="/logout">log out</a></li>
+			</ul>
+		</div>
+
+		{% comment %}
+		Below are the account lightboxes. They are technically included
+		on all of the pages but are always hidden unless called upon.
+		{% endcomment %}
+
+		<div class="passwordBox lightbox">
+			<div>
+				<h3>Edit Password</h3>
+				<form id="passwordForm">
+					<div>
+						<label>Old Password:</label>
+						<input type="text" name="old_password"/>
+					</div>
+
+					<div>
+						<label>New Password:</label>
+						<input type="text" name="new_password"/>
+					</div>
+
+					<div class="actions">
+						<input class="savePassword" type="button" value="Save"/>
+						<input class="cancelAccount" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="questionsBox lightbox">
+			<div>
+				<h3>Edit Security Questions</h3>
+				<form id="questionsForm">
+					<div>
+						<label>Question 1:</label>
+						<input type="text" name="question_1"/>
+					</div>
+
+					<div>
+						<label>Answer 1:</label>
+						<input type="text" name="answer_1"/>
+					</div>
+
+					<div>
+						<label>Question 2:</label>
+						<input type="text" name="question_2"/>
+					</div>
+
+					<div>
+						<label>Answer 2:</label>
+						<input type="text" name="answer_2"/>
+					</div>
+
+					<div>
+						<label>Question 3:</label>
+						<input type="text" name="question_3"/>
+					</div>
+
+					<div>
+						<label>Answer 3:</label>
+						<input type="text" name="answer_3"/>
+					</div>
+
+					<div class="actions">
+						<input class="saveQuestions" type="button" value="Save"/>
+						<input class="cancelAccount" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="resetBox lightbox">
+			<div>
+				<h3>Edit Security Questions</h3>
+				<form id="resetForm">
+					<div>
+						<label for="question_1">Question 1:</label>
+						<input type="hidden" name="question_1"/>
+						<input type="text" name="answer_1"/>
+					</div>
+
+					<div>
+						<label for="question_2">Question 2:</label>
+						<input type="hidden" name="question_2"/>
+						<input type="text" name="answer_2"/>
+					</div>
+
+					<div>
+						<label for="question_3">Question 3:</label>
+						<input type="hidden" name="question_3"/>
+						<input type="text" name="answer_3"/>
+					</div>
+
+					<div>
+						<label>New Password:</label>
+						<input type="text" name="new_password"/>
+					</div>
+
+					<div class="actions">
+						<input class="resetPassword" type="button" value="Save"/>
+						<input class="cancelAccount" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+{% endblock %}

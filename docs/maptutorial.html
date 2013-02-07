@@ -1,0 +1,216 @@
+<p><head>
+    <link href="hilite.css" rel="stylesheet" type="text/css">
+</head></p>
+<h1>Introduction to MAP and the Sample Applications</h1>
+<h2>What is MAP for iDigi?</h2>
+<h2>What is the intent of this guide?</h2>
+<p>This guide acts as an introduction to interacting with the Mobile Assets API in an effective and useful manner. It uses a suite of sample applications to show the functionality of the API and exemplify some common workflows and idioms. This guide does not provide a full overview of the API, nor does it deal with obtaining MAP-enabled devices or device troubleshooting. For more detailed information about the MAP API please see the MAP User Guide. For more help with setting up your device to work with MAP please see the Getting Started Guide. Both of these are available at <a href="https://map.idigi.com">https://map.idigi.com</a>.</p>
+<h2>Why are the sample applications written in Python?</h2>
+<p>Python's available libraries, interactive nature, and Google App Engine supoort allowed us to rapidly develop the sample applications. Most of the code in the sample applications are intentionally straightforward, but Python's syntax makes the logic of the code especially clear.</p>
+<h1>SOAP, Libraries, and Useful Tools</h1>
+<p>Simple Object Access Protocol is a mature protocol for exchanging web services information, generally using XML over HTTP. In general, MAP uses the Remote Procedure Call style of SOAP communication; that is, calls to the MAP API act like function calls and responses from MAP can often be treated as a response to the function invocated.</p>
+<p>For these sample applications we are using a library for Pyton called <a href="https://feorahosted.org/suds/wiki/Documentation">Suds</a>. Like SOAP libraries for different languages, Suds parses SOAP messages into native Python data structures. To see the raw XML data that has been sent or received there are a few options. If you have downloaded the sample applcations and have them hosted on your own Google App Engine account, you can view the application logs at <a href="http://appengine.google.com">http://appengine.google.com</a>, including all messages sent and received. If you are using Suds locally or in an interactive session, any messages can be viewed by using <code>print client.last_sent()</code> and <code>print client.last_received()</code> on your client object.</p>
+<p>SOAP libraries and documentation for using them are available in most languages. The general procedure for using a SOAP library is to use the WSDL's provided by a service to create a set of objects representing the objects defined in the WSDL. Communicating with the service is then conducted by filling in these objects with the required data, using the SOAP library to convert the objects into XML and send the request.</p>
+<h2>Anatomy of a SOAP message</h2>
+<p>Each SOAP message is composed of the usual XML version string followed by the SOAP namepsace for the specific service in use. Next comes the SOAP header and body. According to the specification the header is optional, but with MAP we usually use the header contain credential informtion. An example SOAP message:</p>
+<div class="codehilite"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;SOAP-ENV:Envelope</span> <span class="na">xmlns:ns0=</span><span class="s">&quot;http://vo.atms.core.mtrak.digi.com/xsd&quot;</span>
+ <span class="na">xmlns:ns1=</span><span class="s">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span>
+ <span class="na">xmlns:ns2=</span><span class="s">&quot;http://service.atms.core.mtrak.digi.com&quot;</span>
+ <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+ <span class="na">xmlns:SOAP-ENV=</span><span class="s">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;SOAP-ENV:Header&gt;</span>
+        <span class="nt">&lt;username&gt;</span>person<span class="nt">&lt;/username&gt;</span>
+        <span class="nt">&lt;password&gt;</span>FoobarbaZ<span class="nt">&lt;/password&gt;</span>
+    <span class="nt">&lt;/SOAP-ENV:Header&gt;</span>
+    <span class="nt">&lt;ns1:Body&gt;</span>
+        <span class="nt">&lt;ns2:stopTracking&gt;</span>
+            <span class="nt">&lt;ns2:args0&gt;</span>
+                <span class="nt">&lt;ns0:assetId&gt;</span>31<span class="nt">&lt;/ns0:assetId&gt;</span>
+            <span class="nt">&lt;/ns2:args0&gt;</span>
+        <span class="nt">&lt;/ns2:stopTracking&gt;</span>
+    <span class="nt">&lt;/ns1:Body&gt;</span>
+<span class="nt">&lt;/SOAP-ENV:Envelope&gt;</span>
+</pre></div>
+
+
+<h2>Credentials using SOAP headers</h2>
+<p>The way that MAP currently authenticates its users is by using the SOAP headers to retain username and password information. In each client file, the username and password of a specific user is added to the headers of the client. Future versions of MAP will support cookie authentication.</p>
+<h1>Structure of the Sample applications</h1>
+<p>Most of the code relevant to this guide is contained in one of the *_client.py files in the root directory. There is one of these files for each of the WSDLs defining the MAP API. Very little application logic happens in these files, they are mostly just an interface layer between the application and MAP, but they are very useful for seeing how to interact with MAP.</p>
+<p>Files in the application/ directory are where the application logic happens for each segment of the application. They define the restful API for the sample applications.</p>
+<p>The static/ directory holds all of the publicly available resources, such as images, javascript, and css. These are not of particular importance to this guide.</p>
+<p>The template/ directory holds the HTML templates for each page.</p>
+<p>The suds/ and ndb/ directories are just libraries that need to be included with the application. Suds is the external library used for interacting with SOAP requests, and ndb is a patch for a known bug in Google App Engine.</p>
+<h1>Login Service</h1>
+<p>The following calls are to the Login Service at <a href="https://map.idigi.com/services/LoginService?wsdl">https://map.idigi.com/services/LoginService?wsdl</a>
+They follow the functions found in lgn_client.py</p>
+<h2>Authentication</h2>
+<p>The MAP service itself doesn't currently have sessions or timeouts when it comes to user authentication; every request needs to have proper credentials. However, the <em>authenticate</em> method is an easy way to check if a user's credentials are correct when building an application on top of MAP. <em>authenticate</em> requires a username and a password, and on success will return a UserProfileVO containing the user's personal information and their account status.</p>
+<h3>Authenticating Other Users</h3>
+<p>It should be noted here that <em>authenticate</em> requires no credentials to run (i.e. it can be executed without having a username or password in the header of the request), and that any user can call <em>authenticate</em> with any other user's username and password as arguments.</p>
+<h2>Credential Management</h2>
+<p>MAP comes with a few ways to create the underlying implementation for an application's password management.</p>
+<h3>Changing a password</h3>
+<p>The <em>changePassword</em> method takes as arguments the user's old password and their new password. This is for times when a user wants to change their password and knows their old password.</p>
+<h3>Resetting a password</h3>
+<p>The <em>resetPassword</em> method takes a <em>SecurityQuestionVO</em>, which is simply three question-answer pairs, a username, and a new password. This can be used when a user needs a new password but has forgotten their old one. Note that there are other methods of changing a user's password, but that this is the only method MAP provides for a user to change their own password.</p>
+<h3>Security questions</h3>
+<p>As mentioned in the last section, MAP can store security questions and answers for each user. These questions are not necessary if an application on top of MAP has its own password management system, but they are necessary to change the password of a user using MAP's own password management. The methods for interacting with security questions are as follows:</p>
+<ul>
+<li><em>createSecurityQuestion</em>: Sets the given question-answer pairs as the user's password management questions</li>
+<li><em>validateSecurityQuestion</em>: Checks that the given password management questions are correct for a given user</li>
+<li><em>getSecurityQuestion</em>: Returns the questions only for a given user.</li>
+</ul>
+<p><em>getSecurityQuestion</em> is likely a necessary call to make before using either <em>validateSecurityQuestion</em> or resetPassword. The call's result can be used to fill in the <em>reminderQuestion</em> fields in the <em>SecurityQuestionVO</em>.</p>
+<h1>Device Management Service</h1>
+<p>The following calls are to the Device Management Service at <a href="https://map.idigi.com/services/DeviceManagementService?wsdl">https://map.idigi.com/services/DeviceManagementService?wsdl</a>
+They follow the functions found in devcie_client.py</p>
+<h2>Devices</h2>
+<p>There are a number of devices able to communicate with MAP for iDigi, including the Digi X5R and xTrak3 devices. In MAP, each type of device has it's own deviceType number. To view this type, use the searchDeviceType call with a status of 1.</p>
+<h3>Adding devices</h3>
+<p>Adding a Device to MAP is accomplished through the <em>provisionDevice</em> call. Before provisioning a device, make sure that it is not already provisioned in iDigi, as this will cause an error to occur. This call requires:</p>
+<ul>
+<li><em>deviceType</em>: an integer representing the type of MAP enabled device.</li>
+<li><em>mobileOperator</em>: an integer representing the device's mobile carrier. For most users, this field is not required to be accurate, but it is necessary.</li>
+<li><em>mobileNumber</em>: a string representing the device's cellular number.</li>
+<li><em>organizationId</em>: The ID of the organization the device will be associated with. See the Organizations subheader of User Management Service for more info.</li>
+<li><em>serial</em>: A unique, user-provided <em>identifier</em> for the device.</li>
+</ul>
+<p>In addition to these fields, the <em>provisionDevice</em> call may also need a <em>macAddress</em> or <em>IMEI</em> field, depending on the type of device being provisioned.</p>
+<h3>Searching for devices</h3>
+<p>All devices which have been provisioned in a given organization can be seen using the <em>searchDevice</em> call with the correct <em>organizationId</em> filled in. To search for a specific device, use the getDevice call with an <em>organizationId</em> along with either a device's ID or its serial.</p>
+<h2>Device configuration</h2>
+<p>Devices have many configuration options which control how they communicate with MAP and what information they provide.</p>
+<h3>Finding a device's current config</h3>
+<p>Retreiving a device's configuration can be accomplished using the <em>getDeviceConfiguration</em> call and supplying the device's serial. Only configurations that have been set are returned from this call, so a new device will respond with a message of "No record found."</p>
+<h3>Changing a device's configuration</h3>
+<p>The most straightforward way to configure a device is to request the device type's default configuration and edit that structure. By configuring a device like this, it is easier to ensure that the message will be correctly formed and that only options available for your specific device are sent. The way that the sample applications deal with configuring a device are as follows:</p>
+<ol>
+<li>Query MAP for the default configuration for a device of the correct type using getDeviceTypeConfiguration</li>
+<li>Query MAP for the current configuration of a specific device--if it exists--using getDeviceConfiguration with the device's serial</li>
+<li>Merge the two configurations by replacing features in the default configuration with those in the device's current configuration</li>
+<li>Present this information to the user as a web form</li>
+<li>Parse the user's changes to the web form and revert them back into a the data structure that MAP requires. The last three steps are in applications/config.py</li>
+<li>Send the newly created configuration to MAP using the <em>updateDeviceConfiguration</em> call</li>
+</ol>
+<p>If you are using the sample applications as a guide for building your own applications, note that almost all of the comlpexity of this process is contained in steps 4 and 5. Programmatically editing the default configuration and sending it to the device is easy, but exposing it as a user interface is much more complicated. The general use case is to edit a device's configuration once and then likely never again for the lifetime of the device, so querying MAP for the default configuration and editing it directly is likely the best choice for an application's needs.</p>
+<h1>Fleet Management Service</h1>
+<p>The following calls are to the Fleet Management Service at <a href="https://map.idigi.com/services/FleetManagementService?wsdl">https://map.idigi.com/services/FleetManagementService?wsdl</a>
+They follow the functions found in fms_client.py</p>
+<h2>Assets</h2>
+<p>Assets are a first-class object in MAP in that they can be created, deleted, edited, and queried directly. An asset is anything which a device is connected to, such as a truck, a train car, or a package. Assets are important because they allow users to access the most interesting features of MAP.</p>
+<h3>Creating and updating</h3>
+<p>Creating a new asset and modifying an existing asset are very similar, and use the <em>createAsset</em> and <em>updateAsset</em> calls respectively. The basic information necessary to create an asset is:</p>
+<ul>
+<li><em>assetTypeVO</em>: This is an embedded object within an <em>asssetVO</em>. The different types of assets created so far can be found using the <em>searchAssetType</em> call with an empty <em>assetTypeVO</em>.</li>
+<li><em>deviceSerial</em>: The user-defined serial for the device</li>
+<li><em>identificationNumber</em>: A unique number identifying the asset</li>
+<li><em>name</em>: A text string identifying the asset</li>
+<li><em>status</em>: The current status of the asset represented as an integer. While this field must contain a valid integer (1-5), it does not actually affect the status of the asset when created. For most purposes it is okay to just insert a 1 in this field.</li>
+<li><em>installationDate</em>: A specifically formatted date string. See the make_time_string() and make_time_from_string() function calls within fms_client.py for more information, and note that they use the same formatting options as the strftime and strptime calls in C.</li>
+</ul>
+<h3>Searching</h3>
+<p>Searching for assets is generally done using either the <em>searchAsset</em> or <em>getAsset</em> call. <em>searchAsset</em> takes a <em>SearchAssetVO</em> as an argument, to which can be supplied further information to limit the search. The only fields that must be supplied are the fromLimit and toLimit, which limit the nubmer of assets returned from the search. The sample applications do not showcase any searches more specific than searching for all assets available, but the process is straightforward.</p>
+<p><em>getAsset</em> takes an <em>assetIdVO</em> and will return only a specific asset. An asset's <em>assetId</em> is the number assigned to it by MAP when it was first created, not to be confused with the asset's <em>identificationNumber</em>.</p>
+<h3>Deleting</h3>
+<p>Deleting an asset with <em>deleteAsset</em> is almost identical to using <em>getAsset</em> discussed above. Deleting an asset will disassociate the asset from its respective device, but will not unprovision the device from MAP or remove the device from iDigi. At this time there is no way do delete a device from MAP.</p>
+<h2>Geofences</h2>
+<p>Geofences allow assets to be contained within a geographical region. They are separate objects from assets and the geofence-asset relationship is many-to-many; many geofences can be applied to a single asset, and many assets may have reference to a single geofence. For the purposes of the sample applications only one geofence is allowed per asset, but this is a self-imposed limitation.</p>
+<h3>Creating a geofence</h3>
+<p>To create a geofence, use the <em>createGeofence</em> call with a <em>GeofenceVO</em>. <em>GeofenceVOs</em> have a nubmer of required fields:</p>
+<ul>
+<li><em>geofenceName</em>: The name of the geofence</li>
+<li><em>geofenceType</em>: The ID of the geofence type. Geofence types can be searched using the getGeofenceTypesList call with zero arguments</li>
+<li><em>organizationId</em>: The ID of the organization the geofence should be added to. Your own organizationId is available by calling LoginService.authenticate using your own credentals</li>
+<li><em>geofenceGeometry</em>: Geofences take a very specific geometry format. The format is:
+    "POLYGON((long1 lat1, long2 lat2, ... , longN, latN, long1 lat1))"
+For each point, longitude comes before latitude, and the coordinates are separated by a space. each point is separated by a comma, and the entire structure is surrounded by "POLYGON((...))". Also note that the first point must be the same as the last point.</li>
+</ul>
+<h3>Attaching geofences to assets</h3>
+<p>Applying a geofence to an asset can be accomplished using the <em>applyGeofence</em> call. This call takes an <em>assetGeofenceVO</em>, which contains a single assetId as well as a list of <em>geofenceIds</em>. as seen in apply_geofence() in fms_client.py, the sample applications do not make use of multiple geofences per asset, but adding more geofences would simply involve adding more geofences to the list.</p>
+<h2>Other Asset Data</h2>
+<p>MAP stores other useful information about each asset's whereabouts and activities.</p>
+<h3>On-Board Diagnostics (OBD-II) Data</h3>
+<p>To access information about the state of a vehicle, use the <em>getDiagnosticData</em> call with the correct <em>deviceSerial</em>. The <em>deviceSerial</em> is the serial of the device attached to an asset. Note that not all types of devices support the collection of OBD-II data, and the device may have to be configured correctly before it is able to collect this information.</p>
+<h3>Asset Tracking and Alert data</h3>
+<p>Correctly configured and active assets are continually sending data about their state to MAP. Textual representations of this binary data can be accessed using the <em>getAsssetTracksByAssetId</em> and <em>getAssetAlertsByAssetId</em> calls. each take in an <em>FMSInputVO</em>, and require a <em>fromLimit</em>, <em>toLimit</em>, <em>fromTime</em>, and <em>toTime</em>. Just like the asset's <em>installationDate</em>, the <em>fromTime</em> and <em>toTime</em> are required to be a specifically formatted string which can be created using the function make_time_string() in fms_client.py. The only difference between the two calls is the severity of the message.</p>
+<h3>Polling and Tracking an Asset</h3>
+<p>The <em>pollAsset</em>, <em>startTracking</em>, and <em>stopTracking</em> commands all take an <em>assetIdVO</em> as their only argument. <em>pollAsset</em> will give a short message about the state of the asset. <em>startTracking</em> and <em>stopTracking</em> control whether the asset should be sending up tracking data to MAP. It is important to note that the startTracking command should not be issued if the device is not correctly configured for tracking. See the [Getting Started Guide][gsg] for more info.</p>
+<h1>User Management Service</h1>
+<p>The following calls are to the User Service at <a href="https://map.idigi.com/services/UserService?wsdl">https://map.idigi.com/services/UserService?wsdl</a>
+And follow the functions found in user_client.py</p>
+<h2>Organizations</h2>
+<p>An organization is the highest-level concept of user management in MAP. Many users, user groups, assets, devices, and geofences can all interact with each other if they are in the same organization. Organizations follow a tree structure, and every organization has a parent organization. For instance, if you used the sign-up application at <https:map.idigi.com/signup/>, then your organization is a sub-organization of the root. Users in an organization cannot interact with their parent organizations, but they may interact with their sub-organizations if their sublevelPermision is set to true.</p>
+<h3>Creating an Organization</h3>
+<p>Organizations can be created using the <em>createOrganization</em> call and providing a filled-out <em>organizationVO</em>. An <em>organizationVO</em> contains the following important fields:</p>
+<ul>
+<li><em>address</em>, <em>city</em>, <em>state</em>, and <em>zip</em>: Pieces of the organizatoin's address. These are not necessary</li>
+<li><em>status</em>: An integer. 1 means 'active', and 2 means 'inactive'. 1 is almost always the correct choice, because an inactive organization cannot be interacted with.</li>
+<li><em>parentId</em>: the parentId signifies which organization will be the parent of the newly created organization. To make a sub-organization, just use your own organization's ID.</li>
+<li><em>typeId</em>: organizations come in four types, represented by the integers 1-4.<ul>
+<li>1: Organization</li>
+<li>2: Service Provider</li>
+<li>3: Company</li>
+<li>4: User Group
+When creating a new organization, always choose 1. User Groups are described below, but there is never a reason to create an organization of type 4 because there is a separate <em>createUserGroup</em> call.</li>
+</ul>
+</li>
+<li><em>portalId</em>: portalId is a value assigned per-company. If you created your account using the signup page, then always choose the integer 1 when encountering this field.</li>
+<li><em>contact</em>: The contact field is not necessary when creating an organization, but it is necessary when modifying one. To create a contact, insert a filled-out <em>ContactVO</em> within this field.</li>
+</ul>
+<h3>Searching for Organizations</h3>
+<p>The <em>searchOrganization</em> call is one of the most subtle in the API. As is described in search_organization() within user_client.py, here are the rules for searching organizations:</p>
+<ol>
+<li>MAP searches for a <em>portalId</em>, <em>orgId</em>, or <em>name</em>, <em>in that order</em>. If one of these fields is found, then the other two are disregarded. One of these is required.</li>
+<li>Next, the <em>typeId</em> and <em>status</em> of the organization can be used to pare down the search results. Searching with a <em>typeId</em> of 1 will only return "real" organizations, and searching with a <em>status</em> of 1 will disregard disabled organizations. Neither of these fields is required.</li>
+<li><em>minRange</em> and <em>maxRange</em> are used to limit the number of search results. These two fields are always required.</li>
+</ol>
+<p>Searching by organization will return all organizations available which are children of the organization given. Notice that this does not include the organization given in the search. Searching by portalId will return all organizations visible to the current user, including their current organization, but beware that searching by portalId may take a longer time to execute.</p>
+<p>Finding a specific organization can be accomplished using the <em>findOrganizationById</em> call. It takes an integer as its argument--not a SOAP object--and returns the information for that specific organization.</p>
+<h2>Users</h2>
+<p>In MAP, a user is a set of credentials which are tied to some metadata. More importantly, each user is associated with a specific set of permissions. Depending on the use cases deemed important for an application built on MAP, it may or may not make sense for every user of the application to have their own MAP user with separate credentials and permissions. In the sample applications, users sign in with their MAP credentials and can only interact with API calls that they have permission to make.</p>
+<h3>Creating a new user</h3>
+<p>Creating a new user with <em>createUser</em> is similar to the other object creation calls mentioned so far in this guide. Each <em>UserProfileVO</em> is made up of the following objects:</p>
+<ul>
+<li><em>UserInfoVO</em>: Contains personal information</li>
+<li><em>UserLoginVO</em>: Contains information about their account</li>
+<li><em>UserGroupId</em>: a list of user groups the user is associated with. See User Groups below for more info.</li>
+</ul>
+<p>At a minimum the following fields must be filled to create a user:</p>
+<ul>
+<li>A first, middle, and last name</li>
+<li>A username and password. The username must be unique and a password must be eight characters.</li>
+<li>At least one user group</li>
+<li>An <em>organizationId</em></li>
+</ul>
+<p>To allow the user to interact with sub-organizations, their <em>sublevelPermission</em> should be set to True.</p>
+<h3>Modifying users</h3>
+<p>Modifying a user through the updateUser call is almost exactly the same as creating a user. One important detail is that it is not sufficient to only send fields that you wish to change. You have to send all fields required for createUser to updateUser as well.</p>
+<h3>Activating and Deactivating users</h3>
+<p>Users cannot be deleted, but they can be deactivated using the <em>deActivateUser</em> call with the user's ID. This bars the user from making any API calls and is equivalent to setting their status to 2. The <em>activateUser</em> call does the opposite. Be careful: if a user has permission to deactivate other users, they also have the ability to deactivate themselves. It is possible to accidentally deactivate all users in an organization, in which case they will all be locked out!</p>
+<h3>Searching for Users</h3>
+<p>Searching for users is far more straightforward than searching for organizations. Users can provide an <em>organizationId</em>, <em>portalId</em>, <em>status</em>, and/or <em>userGrpId</em> to narrow the search. Unlike with <em>searchOrganization</em>, these are all additive, so including another field can only narrow the search results. Remember that the current user can always be found by using LoginService.<em>authenticate</em>.</p>
+<h2>User Groups</h2>
+<p>User Groups encapsulate the permissions given to users. The way permissions are managed in MAP is that users either do or do not have access to functionality on a per-API-call basis. This lets application developers decide what each user is capable of doing on a very granular level.</p>
+<h3>User Groups, Roles, and Permissions</h3>
+<p>The simplest object in MAP's permission scheme is the <em>PermissionVO</em>. A <em>PermissionVO</em> contains the name of an API call and an ID. To create a <em>PermissionVO</em> the ID is not necessary to provide.</p>
+<p>A <em>RoleVO</em> contains multiple <em>PermissionVOs</em>, along with a name and description. This allows a number of similar calls to be grouped together.</p>
+<p>A <em>UserGroupVO</em> contains multiple <em>RoleVOs</em>. These are the objects which are associated with users. If a <em>PermissionVO</em> exists within a <em>UserGroupVO</em> that a user is associated with, then that user has permission to make that API call.</p>
+<h3>Building a new user group</h3>
+<p>The steps for creating a new user group are as follows:</p>
+<ol>
+<li>Create one or a number of <em>RoleVOs</em> and populate them with <em>PermissionVOs</em>. Each <em>PermissionVO</em> needs to contain the full name of an API call, such as 'getGeofenceTypesList' in the name field. The ID field is not required.</li>
+<li>Create a new user group using the <em>createUserGroup</em> call. This call perplexingly takes an <em>OrganizationVO</em>. Only the <em>organizationId</em>, <em>portalId</em>, and <em>name</em> fields are required.</li>
+<li>Attach the role(s) to the user group using the <em>addRoleToUserGroup</em> call. This call takes a <em>UserGroupVO</em> as an argument. The <em>UserGroupVO</em> is composed of a <em>userGroupID</em> and a list of <em>RoleVO</em> literals.</li>
+</ol>
+<p>It is important to note that roles in MAP are not first-class objects. They cannot be added to MAP other than inside of a user group, and they cannot be searched for. This is why when creating a new user group it is easiest to just create and add Roles to the user group on-the-fly.</p>
+<h3>Creating a Workable Permission Scheme</h3>
+<p>In the sample applications, we took the following measures to create a realistic permission scheme:</p>
+<ul>
+<li>All possible API calls are sorted into lists in role_lists.py. These lists are in no way special; they are just what we as developers decided might be useful groupings.</li>
+<li>Every time an organization is created, we also create a user group for each group of permissions. This can be seen in create_permissions() in user_client.py</li>
+<li>Each user group only has one role, composed of all of the permissions in its respective role_list. This is for simplicity.</li>
+<li>The application keeps a map of user_group_name-to-user_group_ids. The code for this can be seen in get_user_group_map() in user_client.py</li>
+<li>When creating or modifying a user, the user group id's are translated into meaningful names</li>
+</ul>

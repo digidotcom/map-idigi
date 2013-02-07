@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/assets.css" />
+{% endblock %}
+
+{% block content %}
+		<h4>Assets<a href="" class="plus showAddAsset">+</a></h4>
+        <div id="assetsContainer">
+
+        </div>
+
+		<div class="editBox lightbox">
+			<div>
+				<h3>Edit Asset</h3>
+				<form id="editForm">
+					<div>
+						<label>Asset Name:</label>
+						<input id="editName" type="text" name="name"/>
+					</div>
+
+					<div>
+						<label>Description:</label>
+						<input id="editDescription" type="text" name="description"/>
+					</div>
+
+					<div>
+						<label>Status:</label>
+						<input id="editStatus" type="text" name="status"/>
+					</div>
+
+					<div class="actions">
+						<input class="modifyAsset" type="button" value="Save"/>
+						<input class="cancelAsset" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="addBox lightbox">
+			<div>
+				<h3>Add Asset</h3>
+				<form id="assetForm">
+					<div>
+						<label>Asset Name:</label>
+						<input type="text" name="name"/>
+					</div>
+
+					<div>
+						<label>Description:</label>
+						<input type="text" name="description"/>
+					</div>
+
+					<div>
+						<label>Device Serial:</label>
+						<select class="unusedSerials" name="deviceID">
+							<option>Loading...</option>
+						</select>
+					</div>
+
+					<div>
+						<label>Asset Type:</label>
+						<select class='assetTypes' name="assetTypeID">
+                            <option>Loading...</option>
+                        </select>
+					</div>
+
+					<div>
+						<label>Status:</label>
+						<input type="text" name="status"/>
+					</div>
+
+					<div class="actions">
+						<input class="saveAsset" type="button" value="Save"/>
+						<input class="cancelAsset" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/static/assets.js"></script>
+{% endblock %}

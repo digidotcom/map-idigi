@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+        <meta http-equiv="X-UA-Compatible" value="IE=edge">
+		<link rel="stylesheet" href="/static/css/base.css" 	type="text/css" media="all" />
+		{% block css %}{% endblock %}
+	</head>
+
+<body>
+<div id="container">
+	<div id="header">
+		{% block account %}
+		{% endblock %}
+
+		<h1>MAP for iDigi Samples</h1>
+        <h5>Version {{ version }}</h5>
+        <br/>
+
+		{% block navigation %}
+		{% endblock %}
+	</div> <!-- Header -->
+
+
+	{% block content %}
+	{% endblock %}
+
+	<div id="footer">
+		<a target="_blank" href="http://www.digi.com/aboutus/">about Digi</a>
+		|
+		<a target="_blank" href="http://www.digi.com/contactus/">contact</a>
+		|
+        <a target-"_blank" href="http://github.com/digidotcom">source</a>
+	</div><!-- Footer -->
+
+</div><!-- Container -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/base.js"></script>
+	<script type="text/javascript" src="/static/util.js"></script>
+	<script type="text/javascript" src="/static/account.js"></script>
+	{% block scripts %}{% endblock %}
+</body>

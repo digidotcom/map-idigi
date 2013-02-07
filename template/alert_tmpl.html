@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/alert.css" />
+{% endblock %}
+
+{% block content %}
+		<h4 class="h4">Alerts</h4>
+	<div id="alertContainer">
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="/static/alert.js"></script>
+{% endblock %}

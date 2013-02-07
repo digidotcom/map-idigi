@@ -1,0 +1,163 @@
+html, body, div, h1, h2, h3, h4, h5, h6, ul, ol, dl, li, dt, dd, p, blockquote, pre, form, fieldset, table, th, td { margin: 0; padding: 0; }
+html, body {height: 100%;}
+a {text-decoration: none; color:#b7162d; }
+img { border: none; }
+
+body {
+    font-family: Helvetica, sans-serif;
+    background-color: #e0e0e0;
+}
+
+#container {
+    margin: 0 auto;
+    min-height: 100%;
+    width: 740px;
+    background-color: white;
+    padding: 0 2em;
+
+    -moz-box-shadow: 0px 0px 6px #aaaaaa;
+    -webkit-box-shadow: 0px 0px 6px #aaaaaa;
+    box-shadow: 0px 0px 6px #aaaaaa;
+
+}
+
+#header {
+    margin: 0 auto;
+    padding: 2em 0;
+    font-size: 12px;
+}
+
+#header ul {
+    list-style: none;
+}
+
+#header li {
+    float: left;
+    margin-right: 2em;
+}
+
+#account {
+    float: right;
+}
+
+#footer {
+    clear: both;
+    font-size: 12px;
+    color: #636363;
+    text-align: center;
+    margin-top: 1em;
+    padding-top: 1em;
+    width: 100%top;
+    padding-bottom: 2em;
+}
+
+.lightbox {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgb(0, 0, 0) transparent;
+    background-color: rgba(0, 0, 0, .4);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000,endColorstr=#66000000)"; /* IE8 */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000,endColorstr=#66000000);   /* IE6 & 7 */
+    display: none;
+}
+
+.lightbox > div {
+    background-color: white;
+    width: 375px;
+    padding: 1em 2em;
+    position: absolute;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.lightbox form div {
+    margin: 1em 0;
+}
+
+label {
+    font-weight: bold;
+    width: 8em;
+    text-align: right;
+    float: left;
+    margin-right: 1em;
+}
+
+.lightbox p {
+    font-size: .8em;
+    margin-left: 11.6em;
+}
+
+/* .lightbox input[type=button], input[type=submit] { */
+input[type=button], input[type=submit] {
+    background-color: #b7162d;
+    padding: 4px 6px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+
+#settings {
+    display: none;
+    position: absolute;
+    font-weight: bold;
+}
+
+#settings {
+    border: 2px solid #b7162d;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+#settings li {
+    float: none;
+    padding: .6em 1.4em;
+    margin-right: 0;
+    background-color: white;
+}
+
+#settings li.grey {
+    background-color: #f0f0f0;
+}
+
+#settingsTrigger:hover #settings {
+    display: inline;
+}
+
+/*
+  #settingsTrigger:hover > a {
+  border: 2px solid #b7162d;
+  border-bottom: 2px solid white;
+  z-index: 1;
+  }
+  */
+
+.homeTab {
+    background-color: #b7162d;
+    padding: 4px 6px;
+    border: line;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    float: right;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+/* IE8 and down don't support nth-child, compat class added via css */
+.ieCompatRow {
+	background-color:#e0e0e0;
+}

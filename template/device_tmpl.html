@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/device.css" />
+{% endblock %}
+
+{% block content %}
+		<h2>Provision a New Device</h2>
+        <div id="devicesContainer">
+		<div class="deviceBox">
+			<div>
+				<form id="deviceForm">
+					<div>
+						<label>Device Type:</label>
+						<select class="devTypes" name="device_type">
+							<option>Loading...</option>
+						</select>
+					</div>
+
+					<div>
+						<label>Carrier:</label>
+                        <select class="operators" name=mobile_operator>
+                            <option>Loading...</option>
+                        </select>
+					</div>
+
+					<div>
+						<label>IMEI:</label>
+						<input type="text" name="IMEI"/>
+					</div>
+
+					<div>
+						<label>Mobile Number:</label>
+						<input type="text" name="mobile_number"/>
+					</div>
+
+					<div>
+						<label>MAC Address:</label>
+						<input type="text" name="mac_address"/>
+					</div>
+
+					<div>
+						<label>Serial:</label>
+						<input type="text" name="serial"/>
+					</div>
+
+					<div class="actions">
+						<input class="saveDevice" type="button" value="Save"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/static/device.js"></script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/obd.css" />
+{% endblock %}
+
+{% block content %}
+		<h4 class='h4'>On-Board Diagnostics</h4>
+	<div id="obdContainer">
+        Loading
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="/static/obd.js"></script>
+{% endblock %}

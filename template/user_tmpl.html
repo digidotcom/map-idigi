@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/user.css" />
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/user.js"></script>
+{% endblock %}
+
+{% block content %}
+		<h4>Users<a href="" class="plus showAddUser">+</a></h4>
+        <div id="userContainer">
+        
+        </div>
+
+		<div class="editBox lightbox">
+			<div>
+				<h3>Edit User</h3>
+				<form id="editForm">
+					<div>
+						<label>First Name:</label>
+						<input type="text" name="first_name"/>
+					</div>
+
+					<div>
+						<label>Middle Name:</label>
+						<input type="text" name="middle_name"/>
+					</div>
+
+					<div>
+						<label>Last Name:</label>
+						<input type="text" name="last_name"/>
+					</div>
+
+					<div>
+						<label>User Name:</label>
+						<input type="text" name="user_name"/>
+					</div>
+
+					<div>
+						<label>Password:</label>
+						<input type="password" name="password"/>
+						<p>Must be 8 characters</p>
+					</div>
+
+					<div>
+						<label>Email:</label>
+						<input type="text" name="email"/>
+					</div>
+
+					<div>
+						<label>Organization ID:</label>
+						<input type="text" name="org_id"/>
+					</div>
+
+					<div>
+						<label>Permissions:</label>
+						<select class="userGroupIds" multiple name="user_group_names">
+							<option value="">Loading...</option>
+						</select>
+					</div>
+
+					<div class="actions">
+						<input class="modifyUser" type="button" value="Save"/>
+						<input class="cancelAction" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="addBox lightbox">
+			<div>
+				<h3>Add a User</h3>
+				<form id="userForm">
+					<div>
+						<label>First Name:</label>
+						<input type="text" name="first_name"/>
+					</div>
+
+					<div>
+						<label>Middle Name:</label>
+						<input type="text" name="middle_name"/>
+					</div>
+
+					<div>
+						<label>Last Name:</label>
+						<input type="text" name="last_name"/>
+					</div>
+
+					<div>
+						<label>User Name:</label>
+						<input type="text" name="user_name"/>
+					</div>
+
+					<div>
+						<label>Password:</label>
+						<input type="password" name="password"/>
+						<p>Must be 8 characters</p>
+					</div>
+
+					<div>
+						<label>Email:</label>
+						<input type="text" name="email"/>
+					</div>
+
+					<div>
+						<label>Organization ID:</label>
+                        <input type="text" name="org_id" value="{{ org_id }}"/>
+					</div>
+
+					<div>
+						<label>Permissions:</label>
+						<select class="userGroupIds" multiple name="user_group_names">
+							<option value="">Loading...</option>
+						</select>
+					</div>
+
+					<div class="editActions">
+						<input class="saveUser" type="button" value="Save"/>
+						<input class="cancelAction" type="button" value="Cancel"/>
+					</div>
+				</form>
+			</div>
+		</div>
+    
+{% endblock %}

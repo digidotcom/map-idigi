@@ -1,0 +1,11 @@
+.loginBox {
+	display: inline;
+	position: relative;
+}
+
+.loginBox > div {
+	position: inherit;
+	margin: 0 auto;
+	background-color: #eaeaea;
+	padding-bottom: 3em;
+}

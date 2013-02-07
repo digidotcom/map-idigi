@@ -1,0 +1,57 @@
+.actions {
+    list-style: none;
+    float: right;
+}
+
+.actions li {
+    float: left;
+    margin-right: 1em;
+    cursor: pointer;
+}
+
+#configForm > div:nth-child(odd) {
+    background-color:#e0e0e0;
+}
+
+.feature > div:nth-child(odd) {
+    background-color:#ffffff;
+}
+
+.configHeader {
+    float: left;
+    width: 15em;
+}
+
+label {
+    font-weight: bold;
+    width: 8em;
+    text-align: right;
+    float: none;
+    margin-right: 1em;
+    margin-left: 3em;
+}
+
+.link {
+    margin: 9px 0 4px 6px;
+    padding: 0 8px 4px 18px;
+    line-height: 10px;
+    color: black;
+    font-size: 14px;
+    display: block;
+    background: transparent url(/static/images/arrow-down.png) no-repeat top left;
+}
+
+.assetTab {
+    background-color: #b7162d;
+    padding: 4px 6px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    float: right;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
